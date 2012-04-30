@@ -1,0 +1,9 @@
+/* always standalone and don't need to show the docking button */
+button.dock-status-bar-item {
+    display: none;
+}
+
+/* most settings don't make sense */
+button.settings-status-bar-item {
+    display: none;
+}

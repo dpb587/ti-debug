@@ -1,0 +1,69 @@
+#!/usr/bin/env node
+
+var util = require('util'),
+    TiDebug_Manager = require('../lib/ti-debug/manager'),
+    DBGp_Server = require('../lib/dbgp/server');
+
+/**
+ * Command-line
+ */
+var cli = require('commander');
+
+cli.coerceListener = function (val) {
+    val = val.split(':');
+
+    if (val.length != 2) {
+        throw new Error('Listener should be in the format of ip:port.');
+    }
+
+    if (val[0] == '*') {
+        val[0] = '0.0.0.0';
+    }
+
+    return val;
+};
+
+cli
+    .version('0.8.0')
+    .usage('[options]')
+    .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
+    .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
+    .option('--web <ip:port>', 'Listener for web browser connections [*:9002]', cli.coerceListener, ['0.0.0.0', '9222'])
+    .option('--log [none|error|warn|info|debug]', 'Logging level [info]', 'info')
+    .parse(process.argv);
+
+/**
+ * logger
+ */
+var Logger = require('socket.io/lib/logger'), logger;
+
+if (cli.log && cli.log != 'none') {
+    logger = new Logger();
+    logger.level = ['error', 'warn', 'info', 'debug'].indexOf(cli.log);
+}
+
+
+var manager = new TiDebug_Manager();
+manager.listen(cli.web[1], cli.web[0]);
+
+manager.register('dbgp', function (name) {
+    var name = name, dbgp = new DBGp_Server();
+    dbgp.listen(cli.dbgp[1], cli.dbgp[0]);
+
+    if (logger) {
+        dbgp.on('listening', function () {
+            logger.info('[' + name + '] listening on ' + this.server.address().address + ':' + this.server.address().port);
+        });
+        dbgp.server.on('connection', function (socket) {
+            var endpoint = socket.remoteAddress + ':' + socket.remotePort;
+
+            logger.debug('[' + name + '] ' + endpoint + ' connected');
+
+            socket.on('close', function () {
+                logger.debug('[' + name + '] ' + endpoint + ' disconnected');
+            });
+        });
+    }
+
+    return dbgp;
+});
