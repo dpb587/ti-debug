@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-var util = require('util'),
-    TiDebug_Manager = require('../lib/ti-debug/manager'),
-    DBGp_Server = require('../lib/dbgp/server');
+var util = require('util');
+var TiDebug = require('../lib/ti-debug/server');
+var DBGpService = require('../lib/dbgp/service');
+var DBGpProxyIDE = require('../lib/dbgp/proxy/ide');
+var V8Service= require('../lib/v8/service');
+var InspectorService = require('../lib/inspector/service');
 
 /**
  * Command-line
@@ -28,7 +31,7 @@ cli
     .usage('[options]')
     .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
     .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
-    .option('--web <ip:port>', 'Listener for web browser connections [*:9002]', cli.coerceListener, ['0.0.0.0', '9222'])
+    .option('--server <ip:port>', 'Listener for browser connections [*:9222]', cli.coerceListener, ['0.0.0.0', '9222'])
     .option('--log [none|error|warn|info|debug]', 'Logging level [info]', 'info')
     .parse(process.argv);
 
@@ -43,27 +46,39 @@ if (cli.log && cli.log != 'none') {
 }
 
 
-var manager = new TiDebug_Manager();
-manager.listen(cli.web[1], cli.web[0]);
+var server = new TiDebug(
+    {
+        host : cli.server[0],
+        port : cli.server[1]
+    },
+    logger
+);
 
-manager.register('dbgp', function (name) {
-    var name = name, dbgp = new DBGp_Server();
-    dbgp.listen(cli.dbgp[1], cli.dbgp[0]);
+server.addService('dbgp', function () {
+    var dbgp = new DBGpService(
+        {
+            host : cli.dbgp[0],
+            port : cli.dbgp[1]
+        },
+        logger
+    );
 
-    if (logger) {
-        dbgp.on('listening', function () {
-            logger.info('[' + name + '] listening on ' + this.server.address().address + ':' + this.server.address().port);
-        });
-        dbgp.server.on('connection', function (socket) {
-            var endpoint = socket.remoteAddress + ':' + socket.remotePort;
+    var proxy = new DBGpProxyIDE(
+        {
+            host : cli.dbgpProxy[0],
+            port : cli.dbgpProxy[1]
+        },
+        logger
+    );
+    proxy.start();
 
-            logger.debug('[' + name + '] ' + endpoint + ' connected');
-
-            socket.on('close', function () {
-                logger.debug('[' + name + '] ' + endpoint + ' disconnected');
-            });
-        });
-    }
+    dbgp.proxy.addDelegate('ide', proxy);
 
     return dbgp;
 });
+
+server.addService('v8', new V8Service());
+
+server.addService('inspector', new InspectorService());
+
+server.start();

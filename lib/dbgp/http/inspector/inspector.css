@@ -7,3 +7,8 @@ button.dock-status-bar-item {
 button.settings-status-bar-item {
     display: none;
 }
+
+/* not really more than one context right now */
+select#console-context {
+    display: none;
+}

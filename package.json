@@ -11,6 +11,9 @@
         "xml2json" : "0.2.4",
         "socket.io" : "0.9.6"
     },
+    "devDependencies" : {
+        "groc" : "0.2.8"
+    },
     "keywords" : [ "debugger", "dbgp", "php", "webkit" ],
     "bin" : {
         "ti-debug" : "./bin/ti-debug"

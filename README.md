@@ -3,15 +3,15 @@ server-side debugging engines using the webkit remote debugger
 *So far I've only tested this as a debugger for PHP via xdebug.*
 
  * *works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations
- * *sooner* - advanced console evaluations, changing runtime values, code cleanup/docs, ocd fixes, better memory cleanup
+ * *sooner* - advanced console evaluations, changing runtime values, code cleanup/docs, ocd fixes, better memory cleanup, find node-xml2json npm alt
  * *soon* - profiling, meta-inspecting the running ti-debug process
- * *someday* - zend protocol, v8
+ * *someday* - zend/pdt protocol, v8
 
 
 Installation
 ------------
 
-This requires [`node.js`](http://nodejs.org/) - developed and tested under `v0.6.13`.
+This requires [`node.js`](http://nodejs.org/) - developed and tested with `v0.6.13`.
 
     git clone https://github.com/dpb587/ti-debug
     cd ti-debug/
@@ -32,10 +32,19 @@ Protocols
 ### DBGp
 
 A common debugger protocol for languages and debugger UI communications ([read more](http://xdebug.org/docs-dbgp.php)).
-The server will listen on `*9000`. A DBGp proxy will also listen on `*9001`.
+The server will listen on `*:9000`. A DBGp proxy will also listen on `*:9001`.
 
 **PHP** - make sure the [`xdebug`](http://pecl.php.net/package/xdebug) extension is installed and properly configured
 for [remote debugging](http://xdebug.org/docs/remote).
+
+
+References
+----------
+
+ * [DBGp Protocol](http://xdebug.org/docs-dbgp.php)
+ * [Zend/PDT Protocol](http://www.eclipse.org/pdt/documents/PDT%20-%20Debug%20Protocol.pdf)
+ * [V8 Protocol](http://code.google.com/p/v8/wiki/DebuggerProtocol)
+ * [WebKit Announcement](http://www.webkit.org/blog/1875/announcing-remote-debugging-protocol-v1-0/)
 
 
 Credits
@@ -49,4 +58,4 @@ Credits
 License
 -------
 
-[BSD License](./LICENSE)
+[BSD License](https://github.com/dpb587/ti-debug/blob/master/LICENSE)

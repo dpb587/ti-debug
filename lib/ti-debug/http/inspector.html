@@ -28,13 +28,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!DOCTYPE html>
 <html>
 <head>
+    <title>ti-debug - loading</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
     <link rel="stylesheet" type="text/css" href="/inspector/dialog.css">
     <link rel="stylesheet" type="text/css" href="/inspector/inspector.css">
     <link rel="stylesheet" type="text/css" href="/inspector/inspectorCommon.css">
     <link rel="stylesheet" type="text/css" href="/inspector/inspectorSyntaxHighlight.css">
     <link rel="stylesheet" type="text/css" href="/inspector/helpScreen.css">
     <link rel="stylesheet" type="text/css" href="/inspector/popover.css">
+
     <script type="text/javascript" src="/inspector/utilities.js"></script>
     <script type="text/javascript" src="/inspector/DOMExtension.js"></script>
     <script type="text/javascript" src="/inspector/treeoutline.js"></script>
@@ -212,14 +215,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="/inspector/SnippetsModel.js"></script>
     <script type="text/javascript" src="/inspector/StylesPanel.js"></script>
 
-    <title>ti-debug</title>
     <link rel="stylesheet" type="text/css" href="/inspector/ti-debug/inspector.css">
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="/inspector/ti-debug/inspector.js"></script>
     <script type="text/javascript" src="/inspector/ti-debug/InspectorBackend.js"></script>
+    <!--<script type="text/javascript" src="/inspector/ti-debug/SourcePHPTokenizer.js"></script>-->
     <script type="text/javascript" src="/inspector/ti-debug/InspectorFrontendHost.js"></script>
     <script type="text/javascript" src="/inspector/ti-debug/Settings.js"></script>
+    <script>
+        (function () {
+            var origin = WebInspector.SourceTokenizer.Registry;
+            WebInspector.SourceTokenizer. = function () {
+            _tokenizerConstructors
 </head>
+
 <body id="-webkit-web-inspector">
     <div id="toolbar">
         <div class="toolbar-item close-left"><button id="close-button-left"></button></div>
