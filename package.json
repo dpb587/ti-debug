@@ -1,7 +1,7 @@
 {
     "name" : "ti-debug",
     "description" : "Server-side components for WebKit Remote Debugging",
-    "version" : "0.3.0",
+    "version" : "0.1.0",
     "author" : "Danny Berger <dpb587@gmail.com>",
     "dependencies" : {
         "commander" : "0.6.0",
