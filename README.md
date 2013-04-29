@@ -1,4 +1,4 @@
-server-side debugging engines using the webkit remote debugger
+Server-side debugging engines using the webkit remote debugger
 
 *So far I've only tested this as a debugger for PHP via xdebug.*
 
@@ -8,14 +8,29 @@ server-side debugging engines using the webkit remote debugger
  * *someday* - zend/pdt protocol, v8
 
 
+Prerequisites
+-------------
+
+At a minimum this requires `node` and `npm` to get started. I am currently using:
+
+    $ node -v
+    v0.10.1
+    $ npm -v
+    1.2.15
+
+When debugging PHP, it also requires `php` and `xdebug`. I am currently using:
+
+    $ php -v
+    PHP 5.4.14-1~precise+1 (cli) (built: Apr 11 2013 17:09:50) 
+    $ php --re xdebug | head -n1
+    Extension [ <persistent> extension #49 xdebug version 2.2.2 ] {
+
+
 Installation
 ------------
 
-This requires [`node.js`](http://nodejs.org/) - developed and tested with `v0.6.13`.
-
     git clone https://github.com/dpb587/ti-debug
     cd ti-debug/
-    git clone git://github.com/buglabs/node-xml2json.git node_modules/node-xml2json
     npm install
 
 
@@ -51,8 +66,14 @@ Credits
 -------
 
  * Created by Danny Berger &lt;<dpb587@gmail.com>&gt;
- * [WebKit](http://www.webkit.org/) - [front-end](http://svn.webkit.org/repository/webkit/trunk/Source/WebCore/inspector/front-end/) (r115569, 2012-04-28 10:20:37 -0400)
- * npm packages - commander, express, node-uuid, node-expat, xml2json, socket.io
+ * [WebKit](http://www.webkit.org/) - [front-end](http://svn.webkit.org/repository/webkit/trunk/Source/WebCore/inspector/front-end/) (r149292, 2013-04-29 09:24:18)
+ * npm packages:
+    [commander](https://npmjs.org/package/commander),
+    [express](https://npmjs.org/package/express),
+    [node-uuid](https://npmjs.org/package/node-uuid),
+    [node-expat](https://npmjs.org/package/node-expat),
+    [xml2json](https://npmjs.org/package/xml2json),
+    [socket.io](https://npmjs.org/package/socket.io)
 
 
 License
