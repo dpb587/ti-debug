@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var util = require('util');
+var manifest = require('../lib/ti-debug/manifest');
 var TiDebugService = require('../lib/ti-debug/service');
 var InspectorService = require('../lib/inspector/service');
 var DBGpService = require('../lib/dbgp/service');
@@ -27,7 +28,7 @@ cli.coerceListener = function (val) {
 };
 
 cli
-    .version('0.1.0')
+    .version(manifest.VERSION)
     .usage('[options]')
     .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
     .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
