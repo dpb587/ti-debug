@@ -27,7 +27,7 @@ cli.coerceListener = function (val) {
 };
 
 cli
-    .version('0.8.0')
+    .version('0.1.0')
     .usage('[options]')
     .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
     .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
@@ -70,6 +70,7 @@ server.addService('dbgp', function () {
         },
         logger
     );
+
     proxy.start();
 
     dbgp.proxy.addDelegate('ide', proxy);
