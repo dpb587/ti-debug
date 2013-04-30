@@ -4,7 +4,6 @@ var util = require('util');
 var TiDebug = require('../lib/ti-debug/server');
 var DBGpService = require('../lib/dbgp/service');
 var DBGpProxyIDE = require('../lib/dbgp/proxy/ide');
-var V8Service= require('../lib/v8/service');
 var InspectorService = require('../lib/inspector/service');
 
 /**
@@ -77,8 +76,6 @@ server.addService('dbgp', function () {
 
     return dbgp;
 });
-
-server.addService('v8', new V8Service());
 
 server.addService('inspector', new InspectorService());
 
