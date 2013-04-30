@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
 var util = require('util');
-var TiDebugService = require('../lib/ti-debug/service');
-var InspectorService = require('../lib/inspector/service');
-var DBGpService = require('../lib/dbgp/service');
 var DBGpEngineService = require('../lib/dbgp/engine/service');
 var DBGpEngineProxyService = require('../lib/dbgp/engine/proxy/standard');
 
@@ -31,7 +28,6 @@ cli
     .usage('[options]')
     .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
     .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
-    .option('--server <ip:port>', 'Listener for browser connections [*:9222]', cli.coerceListener, ['0.0.0.0', '9222'])
     .option('--log [none|error|warn|info|debug]', 'Logging level [info]', 'info')
     .parse(process.argv);
 
@@ -44,7 +40,6 @@ if (cli.log && cli.log != 'none') {
     logger = new Logger();
     logger.level = ['error', 'warn', 'info', 'debug'].indexOf(cli.log);
 }
-
 
 var dbgp_engine = new DBGpEngineService(
     {
@@ -65,23 +60,3 @@ var dbgp_engine_proxy = new DBGpEngineProxyService(
 
 dbgp_engine.start();
 dbgp_engine_proxy.start();
-
-var tidebug = new TiDebugService(
-    {
-        host : cli.server[0],
-        port : cli.server[1]
-    },
-    logger
-);
-
-tidebug.addProtocol(
-    'dbgp',
-    new DBGpService(dbgp_engine, {}, logger)
-);
-
-tidebug.addProtocol(
-    'inspector',
-    new InspectorService({}, logger)
-);
-
-tidebug.start();
