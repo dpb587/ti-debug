@@ -2,11 +2,11 @@
 
 var util = require('util');
 var manifest = require('../lib/ti-debug/manifest');
+
 var TiDebugService = require('../lib/ti-debug/service');
 var InspectorService = require('../lib/inspector/service');
 var DBGpService = require('../lib/dbgp/service');
-var DBGpEngineService = require('../lib/dbgp/engine/service');
-var DBGpEngineProxyService = require('../lib/dbgp/engine/proxy/standard');
+var DBGpProxyService = require('../lib/dbgp-proxy/service');
 
 /**
  * Command-line
@@ -46,8 +46,11 @@ if (cli.log && cli.log != 'none') {
     logger.level = ['error', 'warn', 'info', 'debug'].indexOf(cli.log);
 }
 
+/**
+ * Bootstrap
+ */
 
-var dbgp_engine = new DBGpEngineService(
+var dbgp = new DBGpService(
     {
         host : cli.dbgp[0],
         port : cli.dbgp[1]
@@ -55,17 +58,14 @@ var dbgp_engine = new DBGpEngineService(
     logger
 );
 
-var dbgp_engine_proxy = new DBGpEngineProxyService(
-    dbgp_engine,
+var dbgp_proxy = new DBGpProxyService(
     {
-            host : cli.dbgpProxy[0],
-            port : cli.dbgpProxy[1]
+        dbgp : dbgp,
+        host : cli.dbgpProxy[0],
+        port : cli.dbgpProxy[1]
     },
     logger
 );
-
-dbgp_engine.start();
-dbgp_engine_proxy.start();
 
 var tidebug = new TiDebugService(
     {
@@ -75,7 +75,8 @@ var tidebug = new TiDebugService(
     logger
 );
 
-tidebug.register(new DBGpService(dbgp_engine, {}, logger));
+tidebug.register(dbgp);
+tidebug.register(dbgp_proxy);
 tidebug.register(new InspectorService({}, logger));
 
 tidebug.start();
@@ -84,9 +85,7 @@ process.on(
     'SIGINT',
     function () {
         logger.info('Received SIGINT');
-        tidebug.stop();
 
-        dbgp_engine.stop();
-        dbgp_engine_proxy.stop();
+        tidebug.stop();
     }
 );
