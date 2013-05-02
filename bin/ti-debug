@@ -79,3 +79,14 @@ tidebug.register(new DBGpService(dbgp_engine, {}, logger));
 tidebug.register(new InspectorService({}, logger));
 
 tidebug.start();
+
+process.on(
+    'SIGINT',
+    function () {
+        logger.info('Received SIGINT');
+        tidebug.stop();
+
+        dbgp_engine.stop();
+        dbgp_engine_proxy.stop();
+    }
+);
