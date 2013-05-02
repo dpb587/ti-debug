@@ -17,3 +17,21 @@ select#console-context {
 #main-status-bar .node-search-status-bar-item {
     display: none;
 }
+
+/* ignoring the settings right now, so this is only for the detached message */
+.help-window-outer {
+    background-color: rgba(0, 0, 0, .3);
+}
+
+.help-window-outer .help-window-main {
+    left: 50%;
+    margin-left: -300px;
+    position: absolute;
+    top: 40%;
+    width: 600px;
+
+}
+
+.help-window-caption {
+    position: relative;
+}
