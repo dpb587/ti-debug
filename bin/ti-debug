@@ -75,14 +75,7 @@ var tidebug = new TiDebugService(
     logger
 );
 
-tidebug.addProtocol(
-    'dbgp',
-    new DBGpService(dbgp_engine, {}, logger)
-);
-
-tidebug.addProtocol(
-    'inspector',
-    new InspectorService({}, logger)
-);
+tidebug.register(new DBGpService(dbgp_engine, {}, logger));
+tidebug.register(new InspectorService({}, logger));
 
 tidebug.start();
