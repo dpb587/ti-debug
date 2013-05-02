@@ -30,9 +30,9 @@ cli.coerceListener = function (val) {
 cli
     .version(manifest.VERSION)
     .usage('[options]')
-    .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['0.0.0.0', '9000'])
-    .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['0.0.0.0', '9001'])
-    .option('--server <ip:port>', 'Listener for browser connections [*:9222]', cli.coerceListener, ['0.0.0.0', '9222'])
+    .option('--dbgp <ip:port>', 'Listener for DBGp connections [127.0.0.1:9000]', cli.coerceListener, ['127.0.0.1', '9000'])
+    .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [127.0.0.1:9001]', cli.coerceListener, ['127.0.0.1', '9001'])
+    .option('--server <ip:port>', 'Listener for browser connections [127.0.0.1:9222]', cli.coerceListener, ['127.0.0.1', '9222'])
     .option('--log [none|error|warn|info|debug]', 'Logging level [info]', 'info')
     .parse(process.argv);
 
