@@ -13,12 +13,17 @@ select#console-context {
     display: none;
 }
 
-/* these aren't really applicable right now */
+/* these aren't really applicable panels right now */
 #toolbar button.toolbar-item.elements,
 #toolbar button.toolbar-item.resources,
 #toolbar button.toolbar-item.network,
 #toolbar button.toolbar-item.timeline,
 #toolbar button.toolbar-item.profiles,
 #toolbar button.toolbar-item.audits {
+    display: none;
+}
+
+/* these aren't really applicable features right now */
+#main-status-bar .node-search-status-bar-item {
     display: none;
 }
