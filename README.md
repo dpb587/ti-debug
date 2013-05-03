@@ -1,11 +1,8 @@
-Server-side debugging engines using the webkit remote debugger
+Server-side debugging engines using the WebKit remote debugger This currently works as a PHP debugger via xdebug.
 
-*So far I've only tested this as a debugger for PHP via xdebug.*
-
- * *works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations
- * *sooner* - advanced console evaluations, changing runtime values, code cleanup/docs, ocd fixes, better memory cleanup, find node-xml2json npm alt
- * *soon* - profiling, meta-inspecting the running ti-debug process
- * *someday* - zend/pdt protocol, v8
+ * *currently works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations
+ * *short-term goals* - dbgp-proxying to IDEs, changing runtime values inline, more complex console evaluations (e.g. returning objects/arrays), proper socket termination, code cleanup/documentation
+ * *long-term goals* - zend/pdt protocol, v8
 
 
 Prerequisites
@@ -18,7 +15,7 @@ At a minimum this requires `node` and `npm` to get started. I am currently using
     $ npm -v
     1.2.15
 
-When debugging PHP, it also requires `php` and `xdebug`. I am currently using:
+When debugging PHP, it also requires [`php`](http://php.net/) and [`xdebug`](http://pecl.php.net/package/xdebug). I am currently using:
 
     $ php -v
     PHP 5.4.14-1~precise+1 (cli) (built: Apr 11 2013 17:09:50) 
@@ -37,20 +34,20 @@ Installation
 Usage
 -----
 
-Start the server by running `./bin/ti-debug`, and point your (WebKit-based) browser to
-[localhost:9222](http://localhost:9222).
-
-
-Protocols
----------
-
 ### DBGp
 
 A common debugger protocol for languages and debugger UI communications ([read more](http://xdebug.org/docs-dbgp.php)).
-The server will listen on `*:9000`. A DBGp proxy will also listen on `*:9001`.
+The server will listen on `*:9000`.
 
-**PHP** - make sure the [`xdebug`](http://pecl.php.net/package/xdebug) extension is installed and properly configured
-for [remote debugging](http://xdebug.org/docs/remote).
+Single Developer (debug via browser):
+
+    ./bin/dbgp
+    open http://localhost:9222/
+
+Multiple Developers (debug via browser or IDE):
+
+    ./bin/dbgp-proxy
+    open http://localhost:9222/dbgp/proxy.html?idekey=$USER
 
 
 References
