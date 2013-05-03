@@ -2,8 +2,8 @@
 
 var util = require('util');
 var manifest = require('../lib/ti-debug/manifest');
-var DBGpEngineService = require('../lib/dbgp/engine/service');
-var DBGpEngineProxyService = require('../lib/dbgp/engine/proxy/standard');
+
+var TiDebugService = require('../lib/ti-debug/service');
 
 /**
  * Command-line
@@ -27,8 +27,9 @@ cli.coerceListener = function (val) {
 cli
     .version(manifest.VERSION)
     .usage('[options]')
-    .option('--dbgp <ip:port>', 'Listener for DBGp connections [*:9000]', cli.coerceListener, ['127.0.0.1', '9000'])
-    .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [*:9001]', cli.coerceListener, ['127.0.0.1', '9001'])
+    .option('--dbgp <ip:port>', 'Listener for DBGp connections [127.0.0.1:9000]', cli.coerceListener, ['127.0.0.1', '9000'])
+    .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [127.0.0.1:9001]', cli.coerceListener, ['127.0.0.1', '9001'])
+    .option('--server <ip:port>', 'Listener for browser connections [127.0.0.1:9222]', cli.coerceListener, ['127.0.0.1', '9222'])
     .option('--log [none|error|warn|info|debug]', 'Logging level [info]', 'info')
     .parse(process.argv);
 
@@ -42,22 +43,37 @@ if (cli.log && cli.log != 'none') {
     logger.level = ['error', 'warn', 'info', 'debug'].indexOf(cli.log);
 }
 
-var dbgp_engine = new DBGpEngineService(
+/**
+ * Bootstrap
+ */
+
+var tidebug = new TiDebugService(
     {
-        host : cli.dbgp[0],
-        port : cli.dbgp[1]
+        host : cli.server[0],
+        port : cli.server[1]
     },
     logger
 );
 
-var dbgp_engine_proxy = new DBGpEngineProxyService(
-    dbgp_engine,
+tidebug.create(
+    'dbgp',
     {
+        proxy : {
             host : cli.dbgpProxy[0],
             port : cli.dbgpProxy[1]
-    },
-    logger
+        },
+        host : cli.dbgp[0],
+        port : cli.dbgp[1]
+    }
 );
 
-dbgp_engine.start();
-dbgp_engine_proxy.start();
+tidebug.start();
+
+process.on(
+    'SIGINT',
+    function () {
+        logger.info('Received SIGINT');
+
+        tidebug.stop();
+    }
+);
