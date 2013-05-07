@@ -1,21 +1,23 @@
 Server-side debugging engines using the WebKit remote debugger This currently works as a PHP debugger via xdebug.
 
- * *currently works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations
- * *short-term goals* - dbgp-proxying to IDEs, changing runtime values inline, more complex console evaluations (e.g. returning objects/arrays), proper socket termination, code cleanup/documentation
+ * *currently works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations, changing runtime values inline
+ * *short-term goals* - dbgp-proxying to IDEs, more complex console evaluations (e.g. returning objects/arrays), proper socket termination, code cleanup/documentation
  * *long-term goals* - zend/pdt protocol, v8
 
 
 Prerequisites
 -------------
 
-At a minimum this requires `node` and `npm` to get started. I am currently using:
+At a minimum this requires [`node`](http://nodejs.org/) and [`npm`](https://npmjs.org/) to get started. I am currently
+using:
 
     $ node -v
     v0.10.1
     $ npm -v
     1.2.15
 
-When debugging PHP, it also requires [`php`](http://php.net/) and [`xdebug`](http://pecl.php.net/package/xdebug). I am currently using:
+When debugging PHP, you will want [`php`](http://php.net/) and [`xdebug`](http://pecl.php.net/package/xdebug) installed.
+I am currently using:
 
     $ php -v
     PHP 5.4.14-1~precise+1 (cli) (built: Apr 11 2013 17:09:50) 
@@ -34,10 +36,17 @@ Installation
 Usage
 -----
 
+To use the debugger, ensure you're using a recent WebKit-based browser like
+[Google Chrome](https://www.google.com/intl/en/chrome/browser/) or
+[Apple Safari](http://www.apple.com/safari/). By default `ti-debug` will start a web server on `localhost:9222` for you
+to connect and get started debugging. When new debug sessions are started, they will automatically open in a new window
+-- be sure any popup blockers are disabled for `localhost`.
+
+
 ### DBGp
 
 A common debugger protocol for languages and debugger UI communications ([read more](http://xdebug.org/docs-dbgp.php)).
-The server will listen on `*:9000`.
+By default the client will listen on `localhost:9000`.
 
 Single Developer (debug via browser):
 
@@ -48,6 +57,96 @@ Multiple Developers (debug via browser or IDE):
 
     ./bin/dbgp-proxy
     open http://localhost:9222/dbgp/proxy.html?idekey=$USER
+
+
+Architecture
+------------
+
+The main purpose of `ti-debug` is to allow debugging protocols to be accessible through a browser interface. Currently
+the WebKit Inspector powers the interface and communications occur:
+
+    browser <-- socket.io --> ti-debug <-- debug protocol --> debug engine
+
+In the case of DBGp, a client is started to wait for connections from the DBGp server. When a connection is received, it
+checks to see if there's a browser waiting to debug and creates a debug session for the browser to connect to. From
+there, [Inspector-friendly agents](./lib/dbgp/protocol/inspector/agent) handle translating DBGp commands into WebKit
+commands. For example:
+
+<pre><code>
+      <strong>inspector &gt; ti-debug</strong>:  {
+                                    "method": "Debugger.stepOver",
+                                    "id": 43
+                                }
+    <strong>ti-debug &gt; dbgp-server</strong>:  step_over -i 19
+    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="step_over" transaction_id="19" status="break" reason="ok"&gt;
+                                    &lt;xdebug:message filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/xdebug:message&gt;
+                                &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-server</strong>:  stack_get -i 20
+    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="stack_get" transaction_id="20"&gt;
+                                    &lt;stack where="require" level="0" type="file" filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/stack&gt;
+                                    &lt;stack where="{main}" level="1" type="file" filename="file:///home/vagrant/dist/public/index.php" lineno="1"&gt;&lt;/stack&gt;
+                                &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-server</strong>:  context_names -i 21 -d 0
+    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="context_names" transaction_id="21"&gt;
+                                    &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
+                                    &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
+                                &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-server</strong>:  context_names -i 22 -d 1
+    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="context_names" transaction_id="22"&gt;
+                                    &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
+                                    &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
+                                &lt;/response&gt;
+      <strong>ti-debug &gt; inspector</strong>:  {
+                                    "method": "Debugger.paused",
+                                    "params": {
+                                        "callFrames": [{
+                                            "callFrameId": "0",
+                                            "functionName": "require",
+                                            "location": {
+                                                "scriptId": "file:///home/vagrant/dist/public/wordpress/wp-blog-header.php",
+                                                "lineNumber": 9,
+                                                "columnNumber": 0
+                                            },
+                                            "scopeChain": [{
+                                                "type": "local",
+                                                "object": {
+                                                    "type": "object",
+                                                    "objectId": "|lvl0|ctx0"
+                                                }
+                                            }, {
+                                                "type": "global",
+                                                "object": {
+                                                    "type": "object",
+                                                    "objectId": "|lvl0|ctx1"
+                                                }
+                                            }],
+                                            "this": null
+                                        }, {
+                                            "callFrameId": "1",
+                                            "functionName": "{main}",
+                                            "location": {
+                                                "scriptId": "file:///home/vagrant/dist/public/index.php",
+                                                "lineNumber": 0,
+                                                "columnNumber": 0
+                                            },
+                                            "scopeChain": [{
+                                                "type": "local",
+                                                "object": {
+                                                    "type": "object",
+                                                    "objectId": "|lvl1|ctx0"
+                                                }
+                                            }, {
+                                                "type": "global",
+                                                "object": {
+                                                    "type": "object",
+                                                    "objectId": "|lvl1|ctx1"
+                                                }
+                                            }],
+                                            "this": null
+                                        }],
+                                        "reason": "other"
+                                    }
+                                }</code></pre>
 
 
 References
@@ -62,18 +161,18 @@ References
 Credits
 -------
 
- * Created by Danny Berger &lt;<dpb587@gmail.com>&gt;
+ * Created by [Danny Berger](http://dpb587.me)
  * [WebKit](http://www.webkit.org/) - [front-end](http://svn.webkit.org/repository/webkit/trunk/Source/WebCore/inspector/front-end/) (r149292, 2013-04-29 09:24:18)
  * npm packages:
     [commander](https://npmjs.org/package/commander),
     [express](https://npmjs.org/package/express),
-    [node-uuid](https://npmjs.org/package/node-uuid),
     [node-expat](https://npmjs.org/package/node-expat),
-    [xml2json](https://npmjs.org/package/xml2json),
-    [socket.io](https://npmjs.org/package/socket.io)
+    [node-uuid](https://npmjs.org/package/node-uuid),
+    [socket.io](https://npmjs.org/package/socket.io),
+    [xml2json](https://npmjs.org/package/xml2json)
 
 
 License
 -------
 
-[BSD License](https://github.com/dpb587/ti-debug/blob/master/LICENSE)
+[BSD License](./LICENSE)
