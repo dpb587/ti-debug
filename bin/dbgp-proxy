@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 var util = require('util');
-var manifest = require('../lib/ti-debug/manifest');
-
-var TiDebugService = require('../lib/ti-debug/service');
+var TiDebug = require('../lib/ti-debug');
 
 /**
  * Command-line
@@ -25,7 +23,7 @@ cli.coerceListener = function (val) {
 };
 
 cli
-    .version(manifest.VERSION)
+    .version(TiDebug.MANIFEST.version)
     .usage('[options]')
     .option('--dbgp <ip:port>', 'Listener for DBGp connections [127.0.0.1:9000]', cli.coerceListener, ['127.0.0.1', '9000'])
     .option('--dbgp-proxy <ip:port>', 'Listener for proxying DBGp to IDE connections [127.0.0.1:9001]', cli.coerceListener, ['127.0.0.1', '9001'])
@@ -47,7 +45,7 @@ if (cli.log && cli.log != 'none') {
  * Bootstrap
  */
 
-var tidebug = new TiDebugService(
+var tidebug = TiDebug.create(
     {
         host : cli.server[0],
         port : cli.server[1]
@@ -55,8 +53,12 @@ var tidebug = new TiDebugService(
     logger
 );
 
-tidebug.create(
-    'dbgp',
+tidebug.createFrontend(
+    require('../lib/inspector')
+);
+
+tidebug.createBackend(
+    require('../lib/dbgp'),
     {
         proxy : {
             host : cli.dbgpProxy[0],
