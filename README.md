@@ -65,7 +65,7 @@ Architecture
 The main purpose of `ti-debug` is to allow debugging protocols to be accessible through a browser interface. Currently
 the WebKit Inspector powers the interface and communications occur:
 
-    browser <-- socket.io --> ti-debug <-- debug protocol --> debug engine
+    frontend debugger <-- frontend protocol --> ti-debug <-- debugger protocol --> debugger engine
 
 In the case of DBGp, a client is started to wait for connections from the DBGp server. When a connection is received, it
 checks to see if there's a browser waiting to debug and creates a debug session for the browser to connect to. From
@@ -73,80 +73,80 @@ there, [Inspector-friendly agents](./lib/dbgp/protocol/inspector/agent) handle t
 commands. For example:
 
 <pre><code>
-      <strong>inspector &gt; ti-debug</strong>:  {
-                                    "method": "Debugger.stepOver",
-                                    "id": 43
-                                }
-    <strong>ti-debug &gt; dbgp-server</strong>:  step_over -i 19
-    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="step_over" transaction_id="19" status="break" reason="ok"&gt;
-                                    &lt;xdebug:message filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/xdebug:message&gt;
-                                &lt;/response&gt;
-    <strong>ti-debug &gt; dbgp-server</strong>:  stack_get -i 20
-    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="stack_get" transaction_id="20"&gt;
-                                    &lt;stack where="require" level="0" type="file" filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/stack&gt;
-                                    &lt;stack where="{main}" level="1" type="file" filename="file:///home/vagrant/dist/public/index.php" lineno="1"&gt;&lt;/stack&gt;
-                                &lt;/response&gt;
-    <strong>ti-debug &gt; dbgp-server</strong>:  context_names -i 21 -d 0
-    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="context_names" transaction_id="21"&gt;
-                                    &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
-                                    &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
-                                &lt;/response&gt;
-    <strong>ti-debug &gt; dbgp-server</strong>:  context_names -i 22 -d 1
-    <strong>dbgp-server &gt; ti-debug</strong>:  &lt;response ... command="context_names" transaction_id="22"&gt;
-                                    &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
-                                    &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
-                                &lt;/response&gt;
-      <strong>ti-debug &gt; inspector</strong>:  {
-                                    "method": "Debugger.paused",
-                                    "params": {
-                                        "callFrames": [{
-                                            "callFrameId": "0",
-                                            "functionName": "require",
-                                            "location": {
-                                                "scriptId": "file:///home/vagrant/dist/public/wordpress/wp-blog-header.php",
-                                                "lineNumber": 9,
-                                                "columnNumber": 0
-                                            },
-                                            "scopeChain": [{
-                                                "type": "local",
-                                                "object": {
-                                                    "type": "object",
-                                                    "objectId": "|lvl0|ctx0"
-                                                }
-                                            }, {
-                                                "type": "global",
-                                                "object": {
-                                                    "type": "object",
-                                                    "objectId": "|lvl0|ctx1"
-                                                }
-                                            }],
-                                            "this": null
+      <strong>inspector &gt; ti-debug</strong>: {
+                                "method": "Debugger.stepOver",
+                                "id": 43
+                            }
+    <strong>ti-debug &gt; dbgp-engine</strong>: step_over -i 19
+    <strong>dbgp-engine &gt; ti-debug</strong>: &lt;response ... command="step_over" transaction_id="19" status="break" reason="ok"&gt;
+                                &lt;xdebug:message filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/xdebug:message&gt;
+                            &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-engine</strong>: stack_get -i 20
+    <strong>dbgp-engine &gt; ti-debug</strong>: &lt;response ... command="stack_get" transaction_id="20"&gt;
+                                &lt;stack where="require" level="0" type="file" filename="file:///home/vagrant/dist/public/wordpress/wp-blog-header.php" lineno="10"&gt;&lt;/stack&gt;
+                                &lt;stack where="{main}" level="1" type="file" filename="file:///home/vagrant/dist/public/index.php" lineno="1"&gt;&lt;/stack&gt;
+                            &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-engine</strong>: context_names -i 21 -d 0
+    <strong>dbgp-engine &gt; ti-debug</strong>: &lt;response ... command="context_names" transaction_id="21"&gt;
+                                &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
+                                &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
+                            &lt;/response&gt;
+    <strong>ti-debug &gt; dbgp-engine</strong>: context_names -i 22 -d 1
+    <strong>dbgp-engine &gt; ti-debug</strong>: &lt;response ... command="context_names" transaction_id="22"&gt;
+                                &lt;context name="Locals" id="0"&gt;&lt;/context&gt;
+                                &lt;context name="Superglobals" id="1"&gt;&lt;/context&gt;
+                            &lt;/response&gt;
+      <strong>ti-debug &gt; inspector</strong>: {
+                                "method": "Debugger.paused",
+                                "params": {
+                                    "callFrames": [{
+                                        "callFrameId": "0",
+                                        "functionName": "require",
+                                        "location": {
+                                            "scriptId": "file:///home/vagrant/dist/public/wordpress/wp-blog-header.php",
+                                            "lineNumber": 9,
+                                            "columnNumber": 0
+                                        },
+                                        "scopeChain": [{
+                                            "type": "local",
+                                            "object": {
+                                                "type": "object",
+                                                "objectId": "|lvl0|ctx0"
+                                            }
                                         }, {
-                                            "callFrameId": "1",
-                                            "functionName": "{main}",
-                                            "location": {
-                                                "scriptId": "file:///home/vagrant/dist/public/index.php",
-                                                "lineNumber": 0,
-                                                "columnNumber": 0
-                                            },
-                                            "scopeChain": [{
-                                                "type": "local",
-                                                "object": {
-                                                    "type": "object",
-                                                    "objectId": "|lvl1|ctx0"
-                                                }
-                                            }, {
-                                                "type": "global",
-                                                "object": {
-                                                    "type": "object",
-                                                    "objectId": "|lvl1|ctx1"
-                                                }
-                                            }],
-                                            "this": null
+                                            "type": "global",
+                                            "object": {
+                                                "type": "object",
+                                                "objectId": "|lvl0|ctx1"
+                                            }
                                         }],
-                                        "reason": "other"
-                                    }
-                                }</code></pre>
+                                        "this": null
+                                    }, {
+                                        "callFrameId": "1",
+                                        "functionName": "{main}",
+                                        "location": {
+                                            "scriptId": "file:///home/vagrant/dist/public/index.php",
+                                            "lineNumber": 0,
+                                            "columnNumber": 0
+                                        },
+                                        "scopeChain": [{
+                                            "type": "local",
+                                            "object": {
+                                                "type": "object",
+                                                "objectId": "|lvl1|ctx0"
+                                            }
+                                        }, {
+                                            "type": "global",
+                                            "object": {
+                                                "type": "object",
+                                                "objectId": "|lvl1|ctx1"
+                                            }
+                                        }],
+                                        "this": null
+                                    }],
+                                    "reason": "other"
+                                }
+                            }</code></pre>
 
 
 References
