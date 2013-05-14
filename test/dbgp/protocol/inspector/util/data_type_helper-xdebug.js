@@ -6,7 +6,7 @@ var xdebugData = require('./_data/xdebug');
 function createGetBasicTypeTest(raw, expected) {
     return function (done) {
         assert.deepEqual(
-            DataTypeHelper.getBasicType(raw),
+            DataTypeHelper.getBasicType(DataTypeHelper.convertComplexObject(raw)),
             expected
 
         );
@@ -18,7 +18,7 @@ function createGetBasicTypeTest(raw, expected) {
 function createGetPropertyPreviewTest(raw, expected) {
     return function (done) {
         assert.deepEqual(
-            DataTypeHelper.getPropertyPreview(raw),
+            DataTypeHelper.getPropertyPreview(DataTypeHelper.convertComplexObject(raw)),
             expected
 
         );
@@ -29,8 +29,9 @@ function createGetPropertyPreviewTest(raw, expected) {
 
 function createGetRemoteObjectTest(raw, expected) {
     return function (done) {
+        console.log(require('util').inspect(DataTypeHelper.getRemoteObject(DataTypeHelper.convertComplexObject(raw), '|lvl0|'), { depth : 8 }));
         assert.deepEqual(
-            DataTypeHelper.getRemoteObject(raw, '|lvl0|'),
+            DataTypeHelper.getRemoteObject(DataTypeHelper.convertComplexObject(raw), '|lvl0|'),
             expected
 
         );
@@ -160,20 +161,13 @@ describe(
                 );
 
                 it(
-                    'fails on unexpected',
-                    function (done) {
-                        try {
-                            DataTypeHelper.getBasicType(
-                                {
-                                    type : 'verystrange'
-                                }
-                            )
-                        } catch (e) {
-                            return done();
+                    'shifts strange types to objects',
+                    createGetBasicTypeTest(
+                        xdebugData.basicUnrecognizedValue,
+                        {
+                            type : 'object'
                         }
-
-                        throw new Error('Expected exception was not thrown.');
-                    }
+                    )
                 );
             }
         );
@@ -189,7 +183,7 @@ describe(
                             type: "object",
                             subtype: "array",
                             name: "$weekday",
-                            value: "Array(2)"
+                            value: "array(2)"
                         }
                     )
                 );
@@ -322,7 +316,7 @@ describe(
                             type: 'object',
                             subtype: 'array',
                             objectId: '|lvl0|$weekday@62703408',
-                            description: 'Array(2)',
+                            description: 'array(2)',
                             value: null,
                             preview: {
                                 lossless: false,
@@ -425,13 +419,13 @@ describe(
                                         type: 'object',
                                         subtype: 'array',
                                         name: 'public_query_vars',
-                                        value: 'Array(47)'
+                                        value: 'array(47)'
                                     },
                                     {
                                         type: 'object',
                                         subtype: 'array',
                                         name: 'private_query_vars',
-                                        value: 'Array(21)'
+                                        value: 'array(21)'
                                     }
                                 ]
                             }
