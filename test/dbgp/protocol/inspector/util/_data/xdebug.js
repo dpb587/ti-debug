@@ -124,3 +124,7 @@ module.exports.basicUninitializedValue = {
     fullname: '$wp_did_header',
     type: 'uninitialized'
 };
+
+module.exports.basicUnrecognizedValue = {
+    type: 'verystrange'
+};
