@@ -16,14 +16,6 @@ using:
     $ npm -v
     1.2.15
 
-When debugging PHP, you will want [`php`](http://php.net/) and [`xdebug`](http://pecl.php.net/package/xdebug) installed.
-I am currently using:
-
-    $ php -v
-    PHP 5.4.14-1~precise+1 (cli) (built: Apr 11 2013 17:09:50) 
-    $ php --re xdebug | head -n1
-    Extension [ <persistent> extension #49 xdebug version 2.2.2 ] {
-
 
 Installation
 ------------
@@ -43,20 +35,42 @@ to connect and get started debugging. When new debug sessions are started, they 
 -- be sure any popup blockers are disabled for `localhost`.
 
 
-### DBGp
+### PHP (DBGp)
 
-A common debugger protocol for languages and debugger UI communications ([read more](http://xdebug.org/docs-dbgp.php)).
-By default the client will listen on `localhost:9000`.
+When debugging PHP, you will want [`php`](http://php.net/) and [`xdebug`](http://pecl.php.net/package/xdebug) installed.
+I am currently using:
+
+    $ php -v
+    PHP 5.4.14-1~precise+1 (cli) (built: Apr 11 2013 17:09:50) 
+    $ php --re xdebug | head -n1
+    Extension [ <persistent> extension #49 xdebug version 2.2.2 ] {
 
 Single Developer (debug via browser):
 
-    ./bin/dbgp
-    open http://localhost:9222/
+    $ ./bin/dbgp
+    $ open http://localhost:9222/
 
 Multiple Developers (debug via browser or IDE):
 
-    ./bin/dbgp-proxy
-    open http://localhost:9222/dbgp/proxy.html?idekey=$USER
+    $ ./bin/dbgp-proxy
+    $ open http://localhost:9222/dbgp/proxy.html?idekey=$USER
+
+### Python (DBGp)
+
+**work in progress**
+
+When debugging Python, you will want [`python`](http://python.org/) and [`komodo-remote-debugging`](http://docs.activestate.com/komodo/8.0/debugpython.html#debugpython_top)
+installed.
+
+    $ wget 'http://downloads.activestate.com/Komodo/releases/8.0.2/remotedebugging/Komodo-PythonRemoteDebugging-8.0.2-78971-linux-x86_64.tar.gz'
+    $ tar -xzf Komodo-PythonRemoteDebugging-8.0.2-78971-linux-x86_64.tar.gz
+    $ cp -r Komodo-PythonRemoteDebugging-8.0.2-78971-linux-x86_64/pythonlib/dbgp venv/lib/python2.7/site-packages/
+    $ cp Komodo-PythonRemoteDebugging-8.0.2-78971-linux-x86_64/pydbgp venv/bin/
+
+Single Developer (debug via browser):
+
+    $ ./bin/dbgp
+    $ open http://localhost:9222/
 
 
 Architecture
