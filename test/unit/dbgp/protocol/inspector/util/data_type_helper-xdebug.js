@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-var DataTypeHelper = require('../../../../../lib/dbgp/protocol/inspector/util/data_type_helper');
+var DataTypeHelper = require('../../../../../../lib/dbgp/protocol/inspector/util/data_type_helper');
 var xdebugData = require('./_data/xdebug');
 
 function createGetBasicTypeTest(raw, expected) {
@@ -29,7 +29,6 @@ function createGetPropertyPreviewTest(raw, expected) {
 
 function createGetRemoteObjectTest(raw, expected) {
     return function (done) {
-        console.log(require('util').inspect(DataTypeHelper.getRemoteObject(DataTypeHelper.convertComplexObject(raw), '|lvl0|'), { depth : 8 }));
         assert.deepEqual(
             DataTypeHelper.getRemoteObject(DataTypeHelper.convertComplexObject(raw), '|lvl0|'),
             expected
@@ -41,7 +40,7 @@ function createGetRemoteObjectTest(raw, expected) {
 }
 
 describe(
-    'dbgp/protocol/inspector/util/data_type_helper',
+    'unit/dbgp/protocol/inspector/util/data_type_helper',
     function () {
         describe(
             '#getBasicType',

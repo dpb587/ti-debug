@@ -40,7 +40,7 @@ configuration options run `bin/ti-debug --help`.
 
 The DBGp service is enabled by default. Simple run `bin/ti-debug`, point your browser to `localhost:9222`, and configure
 your DBGp engine to connect to the DBGp client at `localhost:9000`. If you need to support multiple developers, enable
-the DBGp proxy server by adding the `--dbgp-proxy` option to the command.
+the DBGp proxy server by adding the `--dbgp-proxy` option to the command - both browser-based and IDEs are supported.
 
 
 #### PHP
@@ -48,7 +48,7 @@ the DBGp proxy server by adding the `--dbgp-proxy` option to the command.
 You'll probably want to ensure the [`xdebug`](http://pecl.php.net/package/xdebug) extension is installed and configured.
 
 
-#### Python [WIP]
+#### Python
 
 You'll probably want to ensure the [`komodo-remote-debugging`](http://docs.activestate.com/komodo/8.0/debugpython.html#debugpython_top)
 module is installed. Be sure to invoke scripts with the included `pydbgp`.

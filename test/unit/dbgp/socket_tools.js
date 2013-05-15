@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-var DbgpBackendClientSocketTools = require('../../../../lib/dbgp/backend/client/socket_tools');
+var DbgpBackendClientSocketTools = require('../../../lib/dbgp/socket_tools');
 
 function createSocketSendMessageTest(args, expected) {
     return function (done) {
@@ -17,7 +17,7 @@ function createSocketSendMessageTest(args, expected) {
     }
 };
 
-describe('dbgp/backend/client/socket_tool', function () {
+describe('unit/dbgp/backend/client/socket_tool', function () {
     describe('#socketSendMessage', function () {
         it(
             'includes transaction IDs',
