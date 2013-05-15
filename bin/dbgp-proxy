@@ -32,50 +32,35 @@ cli
     .parse(process.argv);
 
 /**
- * logger
+ * Legacy Support
  */
-var Logger = require('socket.io/lib/logger'), logger;
+console.log('This command will be deprecated; instead you should use the ti-debug command.');
 
-if (cli.log && cli.log != 'none') {
-    logger = new Logger();
-    logger.level = ['error', 'warn', 'info', 'debug'].indexOf(cli.log);
-}
-
-/**
- * Bootstrap
- */
-
-var tidebug = TiDebug.create(
-    {
-        host : cli.server[0],
-        port : cli.server[1]
-    },
-    logger
-);
-
-tidebug.createFrontend(
-    require('../lib/inspector')
-);
-
-tidebug.createBackend(
-    require('../lib/dbgp'),
-    {
-        proxy : {
-            host : cli.dbgpProxy[0],
-            port : cli.dbgpProxy[1]
-        },
+var options = {
+    'log-level' : cli.log,
+    'dbgp' : {
         host : cli.dbgp[0],
         port : cli.dbgp[1]
+    },
+    'dbgp-proxy' : {
+        host : cli.dbgpProxy[0],
+        port : cli.dbgpProxy[1]
+    },
+    'ti-debug' : {
+        host : cli.server[0],
+        port : cli.server[1]
     }
+};
+
+var TiDebugUtil = require('../lib/ti-debug/util');
+var services = TiDebugUtil.loadServices();
+
+services['ti-debug'].run(
+    services,
+    TiDebugUtil.parseCLI(
+        [],
+        services,
+        options
+    )
 );
 
-tidebug.start();
-
-process.on(
-    'SIGINT',
-    function () {
-        logger.info('Received SIGINT');
-
-        tidebug.stop();
-    }
-);
