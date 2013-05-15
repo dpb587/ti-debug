@@ -1,0 +1,160 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var util = require('util');
+var TiDebug = require('../lib/ti-debug');
+var services = {};
+
+fs.readdirSync(__dirname + '/../lib').forEach(
+    function (name) {
+        services[name] = require(__dirname + '/../lib/' + name);
+    }
+);
+
+/**
+ * Command-line
+ */
+var options = {
+    'log-level' : 'info'
+};
+
+for (var name in services) {
+    options[name] = services[name].MANIFEST.enabled;
+}
+
+function updateOptions(options, path, value) {
+    options[path[0]] = path[1] ? updateOptions('object' == typeof options[path[0]] ? options[path[0]] : {}, path.slice(1), value) : value;
+
+    return options;
+}
+
+var curropt;
+
+process.argv.forEach(
+    function(val, index) {
+        if (1 >= index) {
+            return;
+        } else if ('--' == val.substr(0, 2)) {
+            if (curropt) {
+                options = updateOptions(options, curropt.substr(2).split(':'), true);
+            }
+
+            curropt = val;
+        } else if (curropt) {
+            if (val == 'true') {
+                val = true;
+            } else if (val == 'false') {
+                val = false;
+            }
+
+            options = updateOptions(options, curropt.substr(2).split(':'), val);
+
+            curropt = null;
+        } else {
+            throw new Error('Unexpected argument: ' + val);
+        }
+    }
+);
+
+if (curropt) {
+    options = updateOptions(options, curropt.substr(2).split(':'), true);
+}
+
+if (options.help) {
+    console.log('Usage:');
+    console.log('');
+    console.log('    ' + process.argv[1] + ' [options]');
+    console.log('');
+    console.log('Global:');
+    console.log('');
+    console.log('    --help                             output usage information');
+    console.log('    --version                          output the version number');
+    console.log('    --log-level [none|error|warn|info|debug] logging level [info]');
+    console.log('    --[service] [true|false]           enable/disable service');
+    console.log('    --[service]:[option] [value]       specific service option');
+    console.log('');
+    console.log('Services:');
+    console.log('');
+
+    for (var name in services) {
+        var service = services[name];
+
+        console.log('  ' + service.MANIFEST.name + (service.MANIFEST.version ? (' (' + service.MANIFEST.version + ')') : ''));
+        console.log('  ' + service.MANIFEST.description);
+        console.log('');
+
+        console.log('    --' + service.MANIFEST.name + ' [true|false]    enable/disable ' + service.MANIFEST.name + ' [' + (service.MANIFEST.enabled ? 'true' : 'false') + ']');
+
+        for (var key in service.MANIFEST.options_notes) {
+            console.log(
+                '    --' + service.MANIFEST.name + ':' + key + ' [value]    ' + service.MANIFEST.options_notes[key]
+                + ((service.MANIFEST.options_defaults[key]) ? (' [' + service.MANIFEST.options_defaults[key] + ']') : '')
+            );
+        }
+
+        console.log('');
+    }
+
+    console.log('About:');
+    console.log('');
+    console.log('    Website: ' + TiDebug.MANIFEST.upstream);
+    console.log('    Creator: Danny Berger <http://dpb587.me>');
+    console.log('    License: MIT License');
+    console.log('');
+
+    return;
+} else if (options.version) {
+    console.log(TiDebug.MANIFEST.version);
+
+    return;
+}
+
+/**
+ * logger
+ */
+var Logger = require('socket.io/lib/logger')
+var logger;
+
+if (options['log-level'] && options['log-level'] != 'none') {
+    logger = new Logger();
+    logger.level = ['error', 'warn', 'info', 'debug'].indexOf(options['log-level']);
+}
+
+/**
+ * Bootstrap
+ */
+
+var tidebug = TiDebug.create(options['ti-debug'], logger);
+
+for (var name in options) {
+    if ('log-level' == name || 'ti-debug' == name) {
+        continue;
+    } else if (false === options[name]) {
+        continue;
+    }
+
+    var service = services[name];
+    var serviceOptions = service.MANIFEST.options_defaults;
+
+    for (var key in options[name]) {
+        serviceOptions[key] = options[name][key];
+    }
+
+    tidebug.createService(
+        service,
+        serviceOptions
+    );
+}
+
+tidebug.start();
+
+process.on(
+    'SIGINT',
+    function () {
+        if (logger) {
+            logger.info('Received SIGINT');
+        }
+
+        tidebug.stop();
+    }
+);
