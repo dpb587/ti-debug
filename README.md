@@ -270,6 +270,7 @@ Credits
  * npm packages:
     [commander](https://npmjs.org/package/commander),
     [express](https://npmjs.org/package/express),
+    [mocha](https://npmjs.org/package/mocha),
     [node-expat](https://npmjs.org/package/node-expat),
     [node-uuid](https://npmjs.org/package/node-uuid),
     [socket.io](https://npmjs.org/package/socket.io),
@@ -279,4 +280,4 @@ Credits
 License
 -------
 
-[BSD License](./LICENSE)
+[MIT License](./LICENSE)
