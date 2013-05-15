@@ -1,9 +1,5 @@
 Server-side debugging engines using the WebKit remote debugger.
 
- * *currently works* - breakpoints, source code, stepping, variable/scope browsing, simple console evaluations, changing runtime values inline
- * *short-term goals* - dbgp-proxying to IDEs, more complex console evaluations (e.g. returning objects/arrays), proper socket termination, code cleanup/documentation
- * *long-term goals* - zend/pdt protocol, v8
-
 
 Prerequisites
 -------------
@@ -47,11 +43,124 @@ the DBGp proxy server by adding the `--dbgp-proxy` option to the command - both 
 
 You'll probably want to ensure the [`xdebug`](http://pecl.php.net/package/xdebug) extension is installed and configured.
 
+See Also:
+
+ * [`xdebug_break`](http://xdebug.org/docs/remote#xdebug_break)
+
 
 #### Python
 
 You'll probably want to ensure the [`komodo-remote-debugging`](http://docs.activestate.com/komodo/8.0/debugpython.html#debugpython_top)
 module is installed. Be sure to invoke scripts with the included `pydbgp`.
+
+See Also:
+
+ * [`dbgp.client.brk`](http://docs.activestate.com/komodo/8.0/debugpython.html#debugpython_dbgpclient_functions)
+
+
+Functionality
+-------------
+
+<table>
+    <thead>
+        <tr>
+            <th style="text-align:left;">Feature</th>
+            <th>DBGp<br/><small>php/xdebug</small></th>
+            <th>DBGp<br /><small>python/komodo</small></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="vertical-align:top;">stepping &ndash; into</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">stepping &ndash; over</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">stepping &ndash; out</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">stepping &ndash; resume</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">stepping &ndash; break</td>
+            <td style="text-align:center;">&Dagger;<br /><small>&nbsp;</small></td>
+            <td style="text-align:center;">&Dagger;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">variable &ndash; popups</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">variable &ndash; functions</td>
+            <td style="color:#993333;text-align:center;">&#10005;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">variable &ndash; editing</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#993333;text-align:center;">&#10005;<br /><small><a href="https://github.com/dpb587/ti-debug/issues/7">#7</a></small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">breakpoints &ndash; add</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">breakpoints &ndash; remove</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">call stack &ndash; enumeration</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">call stack &ndash; jumping</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">source &ndash; viewing</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">source &ndash; highlighting</td>
+            <td style="text-align:center;">&Dagger;<br /><small>&nbsp;</small></td>
+            <td style="text-align:center;">&Dagger;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">console</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#993333;text-align:center;">&#10005;<br /><small><a href="https://github.com/dpb587/ti-debug/issues/6">#6</a></small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">dbgp-specific &ndash; proxying (browser)</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">dbgp-specific &ndash; proxying (ide)</td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+            <td style="color:#339933;text-align:center;">&#10003;<br /><small>&nbsp;</small></td>
+        </tr>
+    </tbody>
+</table>
+
+<span style="color:#339933;">&#10003;</span> &ndash; full support  
+&Dagger; &ndash; partial support  
+<span style="color:#993333;">&#10005;</span> &ndash; no support
 
 
 Architecture
