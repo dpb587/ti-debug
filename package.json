@@ -2,6 +2,10 @@
     "name" : "ti-debug",
     "description" : "Server-side components for WebKit Remote Debugging",
     "version" : "0.2.0",
+    "repository" : {
+        "type" : "git",
+        "url" : "git://github.com/dpb587/ti-debug.git"
+    },
     "author" : "Danny Berger <dpb587@gmail.com>",
     "contributors" : [
         {
