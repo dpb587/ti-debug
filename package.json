@@ -1,18 +1,41 @@
 {
     "name" : "ti-debug",
+    "version" : "v0.2.0-dev",
     "description" : "Server-side components for WebKit Remote Debugging",
-    "version" : "0.2.0",
+    "keywords" : [
+        "debugger",
+        "dbgp",
+        "php",
+        "xdebug",
+        "webkit",
+        "inspector"
+    ],
+    "homepage" : "https://github.com/dpb587/ti-debug",
+    "bugs" : {
+        "url" : "https://github.com/dpb587/ti-debug/issues"
+    },
+    "license" : "MIT",
+    "author" : {
+        "name" : "Danny Berger",
+        "email" : "<dpb587@gmail.com>",
+        "url" : "http://dpb587.me"
+    },
+    "contributors" : [
+        {
+            "name" : "Open-Source Community",
+            "url" : "https://github.com/dpb587/ti-debug/graphs/contributors"
+        }
+    ],
+    "bin" : {
+        "ti-debug" : "./bin/ti-debug"
+    },
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/dpb587/ti-debug.git"
     },
-    "author" : "Danny Berger <dpb587@gmail.com>",
-    "contributors" : [
-        {
-            "name" : "Danny Berger",
-            "email" : "dpb587@gmail.com"
-        }
-    ],
+    "scripts" : {
+        "test" : "mocha --recursive --reporter spec"
+    },
     "dependencies" : {
         "commander" : "1.1.1",
         "express" : "3.2.0",
@@ -24,18 +47,7 @@
     "devDependencies" : {
         "mocha" : "1.9.0"
     },
-    "keywords" : [
-        "debugger",
-        "dbgp",
-        "php",
-        "xdebug",
-        "webkit",
-        "inspector"
-    ],
-    "bin" : {
-        "ti-debug" : "./bin/ti-debug"
-    },
-    "scripts": {
-        "test" : "mocha --recursive --reporter spec"
+    "engines" : {
+        "node" : ">=0.10"
     }
 }
