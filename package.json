@@ -1,6 +1,6 @@
 {
     "name" : "ti-debug",
-    "version" : "v0.2.1",
+    "version" : "v0.2.2-dev",
     "description" : "Server-side components for WebKit Remote Debugging",
     "keywords" : [
         "debugger",
